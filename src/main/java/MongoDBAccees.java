@@ -51,12 +51,4 @@ public class MongoDBAccees {
 	public void close() {
 		this.mongoClient.close();
 	}
-
-	public static void main(String[] args) throws UnknownHostException {
-		MongoDBAccees dao = new MongoDBAccees("mongodb+srv://testuser:S3RId5bxxIZRcXVi@cluster0.rpzil.mongodb.net/testboard?retryWrites=true&w=majority");
-		dao.write("text");
-		System.out.println(dao.read());
-
-		dao.close();
-	}
 }

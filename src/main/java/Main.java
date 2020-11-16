@@ -53,9 +53,13 @@ public class Main {
 			TimeUnit.MILLISECONDS.sleep(1000);
 			String text = dao.read();
 			if (text.equals(last[0])) continue;
-			last[0] = text;
-			StringSelection test = new StringSelection(text);
-			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(test, null);
+			try {
+				StringSelection test = new StringSelection(text);
+				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(test, null);
+				last[0] = text;
+			} catch (Exception e) {
+				System.out.println("Write on clipboard Error: " + e);
+			}
 		}
 	}
 }
