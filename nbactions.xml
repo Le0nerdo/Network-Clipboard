@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>CUSTOM-clean</actionName>
+            <displayName>clean</displayName>
+            <goals>
+                <goal>clean</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>CUSTOM-build</actionName>
+            <displayName>build</displayName>
+            <goals>
+                <goal>build</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>CUSTOM-Jacoco</actionName>
+            <displayName>Jacoco</displayName>
+            <goals>
+                <goal>clean</goal>
+                <goal>jacoco:prepare-agent</goal>
+                <goal>install</goal>
+                <goal>jacoco:report</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>CUSTOM-jacoco:report</actionName>
+            <displayName>jacoco:report</displayName>
+            <goals>
+                <goal>jacoco:report</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>CUSTOM-test jacoco</actionName>
+            <displayName>test jacoco</displayName>
+            <goals>
+                <goal>test</goal>
+                <goal>jacoco:report</goal>
+            </goals>
+        </action>
+    </actions>

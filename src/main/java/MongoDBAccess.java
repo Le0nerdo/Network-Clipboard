@@ -1,5 +1,4 @@
 import java.net.UnknownHostException;
-import java.util.function.Consumer;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.client.MongoClients;
@@ -14,12 +13,11 @@ import org.bson.Document;
 
 import com.mongodb.MongoClientSettings;
 
-public class MongoDBAccees {
-	MongoClient mongoClient;
-	MongoCollection<Document> collection;
-	Consumer<Document> datareader;
+public class MongoDBAccess implements DBAccess {
+	private MongoClient mongoClient;
+	private MongoCollection<Document> collection;
 
-	public MongoDBAccees(String connString) throws UnknownHostException {
+	public MongoDBAccess(String connString) throws UnknownHostException {
 		MongoClientSettings settings = MongoClientSettings.builder()
 			.applyConnectionString(new ConnectionString(connString))
 			.retryWrites(true)
@@ -27,12 +25,6 @@ public class MongoDBAccees {
 		this.mongoClient = MongoClients.create(settings);
 		MongoDatabase database = this.mongoClient.getDatabase("test");
 		this.collection = database.getCollection("test");
-
-		datareader = new Consumer<>() {
-			public void accept(final Document doc) {
-				System.out.println(doc.toJson());
-			}
-		};
 	}
 
 	public void write(String text) {
