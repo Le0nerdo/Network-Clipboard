@@ -15,43 +15,70 @@ import org.bson.Document;
 
 import com.mongodb.MongoClientSettings;
 
+/**
+ * Class to access mongoDB (atlas) database.
+ * @author Le0nerdo
+ */
 public class MongoDBAccess implements DBAccess {
-	private MongoClient mongoClient;
-	private MongoCollection<Document> collection;
+    /**
+     * Instance of MongoClient used to communicate with the database.
+     */
+    private MongoClient mongoClient;
+    /**
+     * Instance of MongoCollection that is connected to the database.
+     */
+    private MongoCollection<Document> collection;
 
-	public MongoDBAccess(String connString) throws UnknownHostException {
-		MongoClientSettings settings = MongoClientSettings.builder()
-			.applyConnectionString(new ConnectionString(connString))
-			.retryWrites(true)
-			.build();
-		this.mongoClient = MongoClients.create(settings);
-		MongoDatabase database = this.mongoClient.getDatabase("test");
-		this.collection = database.getCollection("test");
-	}
+    /**
+     * Opens a new connection to a MongoDB Atlas database.
+     * @param uri Uniform Resource Identifier for MongoDB Atlas.
+     * @throws UnknownHostException
+     */
+    public MongoDBAccess(final String uri) throws UnknownHostException {
+        MongoClientSettings settings = MongoClientSettings.builder()
+            .applyConnectionString(new ConnectionString(uri))
+            .retryWrites(true)
+            .build();
+        this.mongoClient = MongoClients.create(settings);
+        MongoDatabase database = this.mongoClient.getDatabase("test");
+        this.collection = database.getCollection("test");
+    }
 
-	public void write(String text) {
-		Document newText = new Document("text", text);
-		this.collection.insertOne(newText);
-	}
+    /**
+     * Writes text to database.
+     * @param text Text to be written to database.
+     */
+    public void write(final String text) {
+        Document newText = new Document("text", text);
+        this.collection.insertOne(newText);
+    }
 
-	public String[] read() {
-		FindIterable<Document> res = this.collection.find().sort(new Document("_id", -1)).limit(10);
-		Object[] clean = StreamSupport.stream(res.spliterator(), false).map(e -> e.get("text")).toArray();
-		String[] returnable = new String[10];
-		Arrays.fill(returnable, "");
+    /**
+     * Gets last texts from the database.
+     * @return Array with texts.
+     */
+    public String[] read() {
+        final int documentLimit = 10;
+        FindIterable<Document> res = this.collection.find()
+            .sort(new Document("_id", -1))
+            .limit(documentLimit);
+        Object[] clean = StreamSupport.stream(res.spliterator(), false)
+            .map(e -> e.get("text")).toArray();
+        String[] returnable = new String[documentLimit];
+        Arrays.fill(returnable, "");
 
-		for (int i = 0; i < clean.length; i++) {
-			returnable[i] = (String) clean[i];
-		}
-		//for (String i: returnable) {
-		//	System.out.println("R@R: " + i);
-		//}
+        for (int i = 0; i < clean.length; i++) {
+            returnable[i] = (String) clean[i];
+        }
 
-		return returnable;
-	}
+        return returnable;
+    }
 
-	public void close() {
-		this.mongoClient.close();
-	}
+    /**
+     * Closes the connection to the MongoDB Atlas database.
+     */
+    public void close() {
+        this.mongoClient.close();
+    }
 
 }

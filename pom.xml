@@ -41,21 +41,27 @@
     </dependency>
     <dependency>
       <groupId>org.openjfx</groupId>
-      <artifactId>javafx-graphics </artifactId>
+      <artifactId>javafx-graphics</artifactId>
       <version>11</version>
       <classifier>win</classifier>
     </dependency>
     <dependency>
       <groupId>org.openjfx</groupId>
-      <artifactId>javafx-graphics </artifactId>
+      <artifactId>javafx-graphics</artifactId>
       <version>11</version>
       <classifier>linux</classifier>
     </dependency>
     <dependency>
       <groupId>org.openjfx</groupId>
-      <artifactId>javafx-graphics </artifactId>
+      <artifactId>javafx-graphics</artifactId>
       <version>11</version>
       <classifier>mac</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>3.6.0</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -113,6 +119,11 @@
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
           <version>0.8.3</version>
+          <configuration>
+            <excludes>
+              <exclude>/ui/*</exclude>
+            </excludes>
+          </configuration>
           <executions>
             <execution>
               <goals>

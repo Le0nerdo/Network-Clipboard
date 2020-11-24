@@ -14,99 +14,119 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+/**
+ * A Class that runs the application using javaFX.
+ * @author Le0nerdo
+ */
 public class UserInterface extends Application {
-	private DBAccess dao;
-	private ClipboardManipulator clipboardManipulator;
-	private String[] last = new String[10];
-	private Timeline update;
+    /**
+     * Instance of DBAccess that give access to a database.
+     */
+    private DBAccess databaseAccess;
+    /**
+     * Instance of ClipboardManipulator, that allows manipulation of a
+     * clipboard and dabase.
+     */
+    private ClipboardManipulator clipboardManipulator;
+    /**
+     * Lenght of the history.
+     */
+    private final int historyLenght = 10;
+    /**
+     * History of the last texts on clipboard/database.
+     */
+    private String[] history = new String[historyLenght];
+    /**
+     * A Timeline to update the userinterface.
+     */
+    private Timeline update;
 
-	@Override
-	public void init() throws Exception {
-		Dotenv dotenv = Dotenv.load();
-		String db_uri = dotenv.get("DB_URI");
-		ClipboardAccess clipboardAccess = new SystemClipboard();
-		Arrays.fill(this.last, "");
-		dao = new MongoDBAccess(db_uri);
-		clipboardManipulator = new ClipboardManipulator(clipboardAccess, dao, last);
-		
-		try {
-			clipboardManipulator.updateClipboard();
-		} catch (Exception e) {
-			System.out.println(e);
-		}
+    /**
+     * Initialises the application.
+     * @throws Exception
+     */
+    @Override
+    public void init() throws Exception {
+        Dotenv dotenv = Dotenv.load();
+        String dbUri = dotenv.get("DB_URI");
+        ClipboardAccess clipboardAccess = new SystemClipboard();
+        Arrays.fill(this.history, "");
+        this.databaseAccess = new MongoDBAccess(dbUri);
+        this.clipboardManipulator = new ClipboardManipulator(
+            clipboardAccess,
+            this.databaseAccess,
+            this.history
+        );
 
-		while (true) {
-			try {
-				Toolkit.getDefaultToolkit().getSystemClipboard()
-						.addFlavorListener(clipboardManipulator.createClipboardListener());
-				break;
-			} catch (Exception e) {
-				System.out.println(e);
-			}
-		}
+        while (true) {
+            try {
+                this.clipboardManipulator.updateClipboard();
+                Toolkit.getDefaultToolkit().getSystemClipboard()
+                        .addFlavorListener(
+                            this.clipboardManipulator.createClipboardListener()
+                        );
+                break;
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+    }
 
+    /**
+     * Creates the userinterface and opens it.
+     * @param stage JavaFX main stage of the application.
+     * @throws Exception
+     */
+    @SuppressWarnings("checkstyle:methodlength")
+    @Override
+    public void start(final Stage stage) throws Exception {
+        stage.setTitle("Network Clipboard");
+        BorderPane mainLayout = new BorderPane();
 
-	}
+        ClipboardHistory clipboardHistory =
+            new ClipboardHistory(this.clipboardManipulator, this.history);
+        mainLayout.setCenter(clipboardHistory.getVBox());
 
-	@Override
-	public void start(Stage stage) throws Exception {
-		stage.setTitle("Network Clipboard");
+        this.update = new Timeline(
+            new KeyFrame(Duration.seconds(1),
+            new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(final ActionEvent actionEvent) {
+                        history = clipboardManipulator.updateClipboard();
+                        clipboardHistory.update(history);
+                    }
+                }
+        ));
 
-		Button button = new Button("exit");
-		button.setOnAction(e -> stage.close());
+        this.update.setCycleCount(Timeline.INDEFINITE);
+        this.update.play();
 
-		BorderPane mainLayout = new BorderPane();
-		mainLayout.setBottom(button);
+        final int windowHeight = 500;
+        final int windowWIdth = 250;
+        stage.setScene(new Scene(mainLayout, windowHeight, windowWIdth));
+        stage.show();
+    }
 
-		VBox center = new VBox();
-		HBox historyHeader = new HBox();
-		historyHeader.setAlignment(Pos.CENTER);
+    /**
+     * Stops the application.
+     */
+    @Override
+    public void stop() {
+        this.update.stop();
+        this.databaseAccess.close();
+    }
 
-		historyHeader.getChildren().add(new Text("Click on text in history below to apply it to clipbord."));
-		ClipboardHistory clipboardHistory = new ClipboardHistory(clipboardManipulator, last);
-		center.getChildren().add(historyHeader);
-		center.getChildren().add(clipboardHistory.getVBox());
-
-		mainLayout.setCenter(center);
-
-		update = new Timeline(
-			new KeyFrame(Duration.seconds(1),
-			new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(ActionEvent event) {
-					last = clipboardManipulator.updateClipboard();
-					clipboardHistory.update(last);
-				}
-			}
-		));
-
-		update.setCycleCount(Timeline.INDEFINITE);
-		update.play();
-
-		Scene scene = new Scene(mainLayout, 500, 500);
-		stage.setScene(scene);
-		stage.show();
-	}
-
-	@Override
-	public void stop() {
-		System.out.println("Closing Program");
-		update.stop();
-		dao.close();
-	}
-
-	public static void main(String[] args) {
-		launch(args);
-	}
+    /**
+     * Utility class to start the application.
+     * @param args command-line arguments.
+     */
+    public static void main(final String[] args) {
+        launch(args);
+    }
 
 }

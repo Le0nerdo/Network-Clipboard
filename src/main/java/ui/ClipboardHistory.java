@@ -4,62 +4,98 @@ import domain.ClipboardManipulator;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
-import javafx.scene.control.Button;
+import javafx.geometry.Pos;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
+/**
+ * A Class to maintan a JavaFX VBox that contains the clipboard history.
+ * @author Le0nerdo
+ */
 public class ClipboardHistory {
-	private ClipboardManipulator clipboardManipulator;
-	private VBox vBox = new VBox();
+    /**
+     * Instance of ClipboardManipulator used to put text from history to the
+     * clipboard.
+     */
+    private ClipboardManipulator clipboardManipulator;
+    /**
+     * Main VBox that contains the header and clipboard history.
+     */
+    private VBox vBox = new VBox();
+    /**
+     * VBox that contains only the clipboard history.
+     */
+    private VBox historyBox = new VBox();
 
-	public ClipboardHistory(ClipboardManipulator clipboardManipulator, String[] history) {
-		vBox.setPadding(new Insets(10));
-		this.clipboardManipulator = clipboardManipulator;
-		update(history);
-	}
+    /**
+     * Constructor that creates the initial VBox to show clipboard history.
+     * @param clipboardmanipulator A ClipboardManipulator to put text from
+     * history to the clipboard.
+     * @param currentHistory Current history of the clipboard.
+     */
+    public ClipboardHistory(
+        final ClipboardManipulator clipboardmanipulator,
+        final String[] currentHistory
+    ) {
+        final int padding = 10;
+        this.vBox.setPadding(new Insets(padding));
+        this.clipboardManipulator = clipboardmanipulator;
 
-	public void update(String[] history) {
-		vBox.getChildren().setAll(createElements(history));
-	}
+        HBox historyHeader = new HBox();
+        historyHeader.setAlignment(Pos.CENTER);
+        historyHeader.getChildren().add(new Text(
+            "Click on text in history below to apply it to clipbord."));
 
-	private Text[] createElements(String[] history) {
-		Text[] elements = new Text[history.length];
-		for (int i = 0; i < history.length; i++) {
-			String original = history[i];
-			String cleaned = original.replace("\n", "").replace("\r", "").replace("\t", " ");
-			if (cleaned.length() > 83) {
-				cleaned = cleaned.substring(0, 80) + "...";
-			}
-			Text newElement = new Text(i + ": " + cleaned);
-			newElement.setOnMouseClicked((MouseEvent event) -> {
-				clipboardManipulator.setTemporaryClipboardText(original);
-			});
+        this.vBox.getChildren().add(historyHeader);
+        this.vBox.getChildren().add(historyBox);
+        update(currentHistory);
+    }
 
-			StringProperty style = new SimpleStringProperty();
-			style.setValue("-fx-cursor: hand;");
-			newElement.styleProperty().bind(style);
-			VBox.setMargin(newElement, new Insets(0, 0, 6, 0));
-			elements[i] = newElement;
-		}
+    /**
+     * Updates the shown history according to given history.
+     * @param history History to be shown.
+     */
+    public void update(final String[] history) {
+        this.historyBox.getChildren().setAll(createElements(history));
+    }
 
-		return elements;
-	}
+    private Text[] createElements(final String[] history) {
+        final int maxLineLenght = 83;
+        final int lengthBeforeDots = 80;
+        Text[] elements = new Text[history.length];
+        for (int i = 0; i < history.length; i++) {
+            String original = history[i];
+            String cleaned = original
+                .replace("\n", "").replace("\r", "").replace("\t", " ");
+            if (cleaned.length() > maxLineLenght) {
+                cleaned = cleaned.substring(0, lengthBeforeDots) + "...";
+            }
+            Text newElement = new Text((i + 1) + ": " + cleaned);
+            newElement.setOnMouseClicked((MouseEvent event) -> {
+                clipboardManipulator.setTemporaryClipboardText(original);
+            });
+            this.styleElement(newElement);
+            elements[i] = newElement;
+        }
 
-	public VBox getVBox() {
-		return this.vBox;
-	}
+        return elements;
+    }
 
-	public static VBox create(String[] history) {
-		VBox vbox = new VBox();
-		vbox.setPadding(new Insets(10));
+    private void styleElement(final Text element) {
+        StringProperty style = new SimpleStringProperty();
+        style.setValue("-fx-cursor: hand;");
+        element.styleProperty().bind(style);
+        final int bottomPadding = 6;
+        VBox.setMargin(element, new Insets(0, 0, bottomPadding, 0));
+    }
 
-		for (String text: history) {
-			Button jumpTo = new Button(text);
-			VBox.setMargin(jumpTo, new Insets(10));
-			vbox.getChildren().addAll(jumpTo);
-		}
-
-		return vbox;
-	}
+    /**
+     * Return the VBox that contains the clipboard history.
+     * @return A VBox showing the clipboard history.
+     */
+    public VBox getVBox() {
+        return this.vBox;
+    }
 }

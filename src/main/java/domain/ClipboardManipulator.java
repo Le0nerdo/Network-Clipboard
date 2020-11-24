@@ -6,62 +6,102 @@ import java.util.Arrays;
 
 import dao.DBAccess;
 
+/**
+ * A Class that manipulates a clipoard according to a database, and the
+ * database according to the clipboard.
+ * @author Le0nerdo
+ */
 public class ClipboardManipulator {
-	private DBAccess dao;
-	private String[] last;
-	private ClipboardAccess clipboardAccess;
-	//private Boolean ignore = false;
+    /**
+     * Instance of ClipboardAccess to access a clipboard.
+     */
+    private ClipboardAccess clipboardAccess;
+    /**
+     * Instance of DBAccees to access a database.
+     */
+    private DBAccess databaseAccess;
+    /**
+     * List of the last texts on clipboard/database.
+     */
+    private String[] history;
 
-	public ClipboardManipulator(ClipboardAccess clipboardAccess, DBAccess dao, String[] last) {
-		this.dao = dao;
-		this.last = last;
-		this.clipboardAccess = clipboardAccess;
-	}
+    /**
+     * Constructor that connects the needed instances to the
+     * ClipboardManipulatro.
+     * @param accessToClipboard Instance of ClipboardAccess to access a
+     * clipboard.
+     * @param accessToDatabase Instance of DBAccees to access a database.
+     * @param currentClipboardHistory List of the last texts on
+     * clipboard/database.
+     */
+    public ClipboardManipulator(
+        final ClipboardAccess accessToClipboard,
+        final DBAccess accessToDatabase,
+        final String[] currentClipboardHistory) {
+        this.clipboardAccess = accessToClipboard;
+        this.databaseAccess = accessToDatabase;
+        this.history = currentClipboardHistory;
+    }
 
-	public String[] updateClipboard() {
-		String[] texts = this.dao.read();
-		if (texts[0].equals(this.last[0])) {
-			this.last = texts;
-			return last;
-		}
-		try {
-			this.last = texts;
-			this.clipboardAccess.setText(texts[0]);
-		} catch (Exception e) {
-			System.out.println("Write on clipboard Error: " + e);
-		}
+    /**
+     * Updates the clipboard according to the database.
+     * @return List of the last texts on clipboard/database.
+     */
+    public String[] updateClipboard() {
+        String[] texts = this.databaseAccess.read();
+        if (texts[0].equals(this.history[0])) {
+            this.history = texts;
+            return this.history;
+        }
+        try {
+            this.history = texts;
+            this.clipboardAccess.setText(texts[0]);
+        } catch (Exception e) {
+            System.out.println(
+                "ERROR ClipboardManipulator/updateclipboard: " + e);
+        }
 
-		return last;
-	}
+        return this.history;
+    }
 
-	public void setTemporaryClipboardText(String text) {
-		try {
-			//ignore = true;
-			this.clipboardAccess.setText(text);
-		} catch (Exception e) {
-			System.out.println("setTemporaryClipboardText Error: " + e);
-		}
-	}
+    /**
+     * Updates the clipboard according to the given text, but does not inform
+     * the database.
+     * @param text The text to be put on the clipboard.
+     */
+    public void setTemporaryClipboardText(final String text) {
+        try {
+            this.clipboardAccess.setText(text);
+        } catch (Exception e) {
+            System.out.println(
+                "ERROR ClipboardManipulator/setTemporaryClipboardText: " + e);
+        }
+    }
 
-	public FlavorListener createClipboardListener() {
-		return new FlavorListener() {
-			@Override 
-			public void flavorsChanged(FlavorEvent e) {
-				//if (ignore) {
-				//	ignore = false;
-				//	return;
-				//}
-				try {
-					if (clipboardAccess.isString()) {
-						String text = clipboardAccess.readText();
-						if (Arrays.asList(last).contains(text)) return;
-						dao.write(text);
-						updateClipboard();
-					}
-				} catch (Exception ee) {
-					System.out.println("FlavorListener Error: " + ee);
-				}
-			}
-		};
-	}
+    /**
+     * Creates a FlavorListener that updates the database when text is copied
+     * to the clipboard.
+     * @return A FlavorListener that updates the database when text is copied
+     * to the clipboard.
+     */
+    public FlavorListener createClipboardListener() {
+        return new FlavorListener() {
+            @Override
+            public void flavorsChanged(final FlavorEvent flavorEvent) {
+                try {
+                    if (clipboardAccess.isString()) {
+                        String text = clipboardAccess.readText();
+                        if (Arrays.asList(history).contains(text)) {
+                            return;
+                        }
+                        databaseAccess.write(text);
+                        updateClipboard();
+                    }
+                } catch (Exception e) {
+                    System.out.println(
+                        "ERROR ClipboardManipulator/FlavorListener: " + e);
+                }
+            }
+        };
+    }
 }
