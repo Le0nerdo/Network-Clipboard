@@ -22,3 +22,7 @@ jobs:
         java-version: 11
     - name: Test with Maven
       run: mvn test
+    - name: Code coverage raport
+      run: mvn clean jacoco:prepare-agent install jacoco:report
+    - name: Data to codecov
+      run: bash <(curl -s https://codecov.io/bash)
