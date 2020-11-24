@@ -5,7 +5,6 @@ import org.junit.Test;
 
 import dao.DBAccess;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.awt.datatransfer.FlavorListener;
