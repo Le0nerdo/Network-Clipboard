@@ -1,3 +1,5 @@
+package domain;
+
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Clipboard;

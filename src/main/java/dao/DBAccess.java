@@ -1,5 +1,7 @@
+package dao;
+
 public interface DBAccess {
 	void write(String text);
-	String read();
+	String[] read();
 	void close();
 }

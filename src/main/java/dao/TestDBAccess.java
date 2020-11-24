@@ -1,21 +1,22 @@
+package dao;
+
 import java.util.ArrayList;
 
 
 public class TestDBAccess implements DBAccess{
 	private ArrayList<String> written;
-	private String toRead;
+	private String[] toRead;
 
-	public TestDBAccess(String toRead) {
+	public TestDBAccess(String toRead[]) {
 		this.written = new ArrayList<String>();
 		this.toRead = toRead;
 	}
 
 	public void write(String text) {
 		this.written.add(text);
-		this.toRead = text;
 	}
 
-	public String read() {
+	public String[] read() {
 		return this.toRead;
 	}
 

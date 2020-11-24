@@ -1,4 +1,8 @@
+package dao;
+
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.stream.StreamSupport;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.client.MongoClients;
@@ -6,8 +10,6 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.ReplaceOptions;
 
 import org.bson.Document;
 
@@ -28,19 +30,28 @@ public class MongoDBAccess implements DBAccess {
 	}
 
 	public void write(String text) {
-		Document newText = new Document("_id", "1")
-			.append("text", text);
-		ReplaceOptions wtf = new ReplaceOptions();
-		wtf.upsert(true);
-		collection.replaceOne(Filters.eq("_id", "1"), newText, wtf);
+		Document newText = new Document("text", text);
+		this.collection.insertOne(newText);
 	}
 
-	public String read() {
-		FindIterable<Document> res = this.collection.find(Filters.eq("_id", "1"));
-		return (String) res.first().get("text");
+	public String[] read() {
+		FindIterable<Document> res = this.collection.find().sort(new Document("_id", -1)).limit(10);
+		Object[] clean = StreamSupport.stream(res.spliterator(), false).map(e -> e.get("text")).toArray();
+		String[] returnable = new String[10];
+		Arrays.fill(returnable, "");
+
+		for (int i = 0; i < clean.length; i++) {
+			returnable[i] = (String) clean[i];
+		}
+		//for (String i: returnable) {
+		//	System.out.println("R@R: " + i);
+		//}
+
+		return returnable;
 	}
 
 	public void close() {
 		this.mongoClient.close();
 	}
+
 }

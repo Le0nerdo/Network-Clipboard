@@ -1,3 +1,5 @@
+package domain;
+
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 

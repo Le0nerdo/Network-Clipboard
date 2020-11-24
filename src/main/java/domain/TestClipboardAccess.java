@@ -1,3 +1,5 @@
+package domain;
+
 import java.util.ArrayList;
 
 import java.awt.datatransfer.UnsupportedFlavorException;
