@@ -1,5 +1,6 @@
 tokens/
 target/
+bin/
 credentials.json
 cleaner.txt
 .env
