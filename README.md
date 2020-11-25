@@ -3,7 +3,7 @@
 ![Badge telling if Mvane tests pass.](https://github.com/Le0nerdo/Network-Clipboard/workflows/Java%20CI%20with%20Maven/badge.svg)
 [![codecov](https://codecov.io/gh/Le0nerdo/Network-Clipboard/branch/main/graph/badge.svg?token=H0Z401L8CI)](https://codecov.io/gh/Le0nerdo/Network-Clipboard)
 
-Network Clipboard is a program that makes it possible to cut, copy and paste text across multiple devices with a clipboard history.
+Network Clipboard is a program that makes it possible to cut, copy and paste text across multiple devices.
 
 ## Features
 * When using cut or copy on text the computer sends the data to a _, where other connected devices can read it from and with that update their clipboards.
