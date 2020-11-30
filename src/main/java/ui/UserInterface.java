@@ -2,6 +2,7 @@ package ui;
 
 import java.awt.Toolkit;
 import java.util.Arrays;
+import java.util.prefs.Preferences;
 
 import dao.DBAccess;
 import dao.MongoDBAccess;
@@ -25,43 +26,28 @@ import javafx.util.Duration;
  */
 public class UserInterface extends Application {
     /**
-     * Instance of DBAccess that give access to a database.
-     */
-    private DBAccess databaseAccess;
-    /**
      * Instance of ClipboardManipulator, that allows manipulation of a
      * clipboard and dabase.
      */
     private ClipboardManipulator clipboardManipulator;
     /**
-     * Lenght of the history.
-     */
-    private final int historyLenght = 10;
-    /**
-     * History of the last texts on clipboard/database.
-     */
-    private String[] history = new String[historyLenght];
-    /**
      * A Timeline to update the userinterface.
      */
     private Timeline update;
-
+    private Preferences pref;
     /**
      * Initialises the application.
      * @throws Exception
      */
+    @SuppressWarnings("checkstyle:methodlength")
     @Override
     public void init() throws Exception {
-        Dotenv dotenv = Dotenv.load();
-        String dbUri = dotenv.get("DB_URI");
+        pref = Preferences.userRoot()
+            .node("/user/network_clipboard");
+        String dbUri = pref.get("ATLAS_URI", "hups");
         ClipboardAccess clipboardAccess = new SystemClipboard();
-        Arrays.fill(this.history, "");
-        this.databaseAccess = new MongoDBAccess(dbUri);
-        this.clipboardManipulator = new ClipboardManipulator(
-            clipboardAccess,
-            this.databaseAccess,
-            this.history
-        );
+        DBAccess database = new MongoDBAccess(dbUri);
+        this.clipboardManipulator = new ClipboardManipulator(clipboardAccess, database);
 
         while (true) {
             try {
@@ -72,7 +58,7 @@ public class UserInterface extends Application {
                         );
                 break;
             } catch (Exception e) {
-                System.out.println(e);
+                System.out.println("UserInterface/init" + e);
             }
         }
     }
@@ -89,16 +75,18 @@ public class UserInterface extends Application {
         BorderPane mainLayout = new BorderPane();
 
         ClipboardHistory clipboardHistory =
-            new ClipboardHistory(this.clipboardManipulator, this.history);
+            new ClipboardHistory(this.clipboardManipulator);
         mainLayout.setCenter(clipboardHistory.getVBox());
+
+        Controls controls = new Controls(clipboardManipulator, pref);
+        mainLayout.setBottom(controls.getElement());
 
         this.update = new Timeline(
             new KeyFrame(Duration.seconds(1),
             new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(final ActionEvent actionEvent) {
-                        history = clipboardManipulator.updateClipboard();
-                        clipboardHistory.update(history);
+                        clipboardHistory.update();
                     }
                 }
         ));
@@ -106,9 +94,10 @@ public class UserInterface extends Application {
         this.update.setCycleCount(Timeline.INDEFINITE);
         this.update.play();
 
-        final int windowHeight = 500;
-        final int windowWIdth = 250;
-        stage.setScene(new Scene(mainLayout, windowHeight, windowWIdth));
+        final int windowHeight = 300;
+        final int windowWIdth = 500;
+        stage.setScene(new Scene(mainLayout, windowWIdth, windowHeight));
+        controls.setDefaultFocus();
         stage.show();
     }
 
@@ -118,7 +107,7 @@ public class UserInterface extends Application {
     @Override
     public void stop() {
         this.update.stop();
-        this.databaseAccess.close();
+        this.clipboardManipulator.disconnectDatabase();
     }
 
     /**

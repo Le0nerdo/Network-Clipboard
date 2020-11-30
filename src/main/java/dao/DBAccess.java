@@ -2,6 +2,7 @@ package dao;
 
 /**
  * Class to access a database.
+ * 
  * @author Le0nerdo
  */
 public interface DBAccess {
@@ -22,4 +23,8 @@ public interface DBAccess {
      * Closes the connection to the database.
      */
     void close();
+
+    Boolean isConnected();
+
+    void reconnectTo(String uri);
 }

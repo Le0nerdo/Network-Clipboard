@@ -8,6 +8,7 @@ import javafx.geometry.Pos;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
 /**
@@ -29,6 +30,8 @@ public class ClipboardHistory {
      */
     private VBox historyBox = new VBox();
 
+    private Text connected = new Text("");
+
     /**
      * Constructor that creates the initial VBox to show clipboard history.
      * @param clipboardmanipulator A ClipboardManipulator to put text from
@@ -36,9 +39,7 @@ public class ClipboardHistory {
      * @param currentHistory Current history of the clipboard.
      */
     public ClipboardHistory(
-        final ClipboardManipulator clipboardmanipulator,
-        final String[] currentHistory
-    ) {
+        final ClipboardManipulator clipboardmanipulator) {
         final int padding = 10;
         this.vBox.setPadding(new Insets(padding));
         this.clipboardManipulator = clipboardmanipulator;
@@ -47,18 +48,23 @@ public class ClipboardHistory {
         historyHeader.setAlignment(Pos.CENTER);
         historyHeader.getChildren().add(new Text(
             "Click on text in history below to apply it to clipbord."));
+        this.connected.setStroke(Color.rgb(255, 0, 0));
+        historyHeader.getChildren().add(this.connected);
+        
 
         this.vBox.getChildren().add(historyHeader);
         this.vBox.getChildren().add(historyBox);
-        update(currentHistory);
+        update();
     }
 
     /**
      * Updates the shown history according to given history.
      * @param history History to be shown.
      */
-    public void update(final String[] history) {
+    public void update() {
+        String[] history = this.clipboardManipulator.updateClipboard();
         this.historyBox.getChildren().setAll(createElements(history));
+        this.updateConnected();
     }
 
     private Text[] createElements(final String[] history) {
@@ -89,6 +95,14 @@ public class ClipboardHistory {
         element.styleProperty().bind(style);
         final int bottomPadding = 6;
         VBox.setMargin(element, new Insets(0, 0, bottomPadding, 0));
+    }
+
+    private void updateConnected() {
+        if (this.clipboardManipulator.isConnected()) {
+            this.connected.setText("");
+        } else {
+            this.connected.setText(" Not Connected!");
+        }
     }
 
     /**

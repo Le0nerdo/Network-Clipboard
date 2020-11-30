@@ -18,8 +18,6 @@ public class ClipboardManipulatorTest {
 	ClipboardAccess clipboard;
 	ClipboardManipulator manipulator;
 	String[] aStrings = {"a1,", "a2," , "a3,", "a4,", "a5,", "a6,", "a7,", "a8,", "a9,", "a10,"};
-	String[] bstrings = {"b1,", "b2," , "b3,", "b4,", "b5,", "b6,", "b7,", "b8,", "b9,", "b10,"};
-
 
 	@Before
 	public void setUp() throws UnsupportedFlavorException, IOException {
@@ -27,10 +25,11 @@ public class ClipboardManipulatorTest {
 		this.clipboard = mock(ClipboardAccess.class);
 
 		when(this.dao.read()).thenReturn(this.aStrings);
+		when(this.dao.isConnected()).thenReturn(true);
 		when(this.clipboard.readText()).thenReturn("c1,");
 		when(this.clipboard.isString()).thenReturn(true);
 
-		this.manipulator = new ClipboardManipulator(clipboard, dao, this.bstrings);
+		this.manipulator = new ClipboardManipulator(clipboard, dao);
 	}
 
 
@@ -41,10 +40,11 @@ public class ClipboardManipulatorTest {
 	}
 
 	@Test
-	public void updateClipboardDoesNotUpdateClipboardWithSameText() {
-		when(this.dao.read()).thenReturn(this.bstrings);
+	public void updateClipboardDoesNotUpdateClipboardWithSameText() throws UnsupportedFlavorException, IOException {
+		when(this.clipboard.readText()).thenReturn("a1,");
+		when(this.clipboard.readText()).thenReturn("a1,");
 		this.manipulator.updateClipboard();
-		verify(clipboard, times(0)).setText(anyString());
+		verify(clipboard, times(1)).setText(anyString());
 	}
 
 	@Test
@@ -57,12 +57,13 @@ public class ClipboardManipulatorTest {
 
 	@Test
 	public void clipboardListenerDoesNotUpdateDatabaseWhitRecentText() throws UnsupportedFlavorException, IOException {
-		when(this.clipboard.readText()).thenReturn("b3,");
+		when(this.clipboard.readText()).thenReturn("a3,");
 
 		FlavorListener clipboardListener = manipulator.createClipboardListener();
 		FlavorEvent event = new FlavorEvent(new Clipboard("fake"));
 		clipboardListener.flavorsChanged(event);
-		verify(dao, times(0)).write(anyString());
+		clipboardListener.flavorsChanged(event);
+		verify(dao, times(1)).write(anyString());
 	}
 
 	@Test

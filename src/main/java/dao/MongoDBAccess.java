@@ -29,19 +29,40 @@ public class MongoDBAccess implements DBAccess {
      */
     private MongoCollection<Document> collection;
 
+    private Boolean connected = false;
+
+    private Boolean connectFailure = false;
+
     /**
      * Opens a new connection to a MongoDB Atlas database.
      * @param uri Uniform Resource Identifier for MongoDB Atlas.
      * @throws UnknownHostException
      */
-    public MongoDBAccess(final String uri) throws UnknownHostException {
-        MongoClientSettings settings = MongoClientSettings.builder()
+    public MongoDBAccess(final String uri) {
+        this.reconnectTo(uri);
+    }
+
+    public void reconnectTo(final String uri) {
+        try {
+            changeClient(uri);
+            this.connected = true;
+        } catch (Exception e) {
+            this.connected = false;
+        }
+    }
+
+    private void changeClient(final String uri) {
+        if (this.mongoClient == null) {
+            this.close();
+        } 
+        final MongoClientSettings settings = MongoClientSettings.builder()
             .applyConnectionString(new ConnectionString(uri))
             .retryWrites(true)
             .build();
         this.mongoClient = MongoClients.create(settings);
-        MongoDatabase database = this.mongoClient.getDatabase("test");
-        this.collection = database.getCollection("test");
+        final MongoDatabase database = this.mongoClient
+            .getDatabase("NetworkClipboard");
+        this.collection = database.getCollection("text");
     }
 
     /**
@@ -50,7 +71,12 @@ public class MongoDBAccess implements DBAccess {
      */
     public void write(final String text) {
         Document newText = new Document("text", text);
-        this.collection.insertOne(newText);
+        try {
+            this.collection.insertOne(newText);
+            this.connectFailure = false;
+        } catch (Exception e) {
+            this.connectFailure = true;
+        }
     }
 
     /**
@@ -58,27 +84,44 @@ public class MongoDBAccess implements DBAccess {
      * @return Array with texts.
      */
     public String[] read() {
-        final int documentLimit = 10;
-        FindIterable<Document> res = this.collection.find()
-            .sort(new Document("_id", -1))
-            .limit(documentLimit);
-        Object[] clean = StreamSupport.stream(res.spliterator(), false)
-            .map(e -> e.get("text")).toArray();
-        String[] returnable = new String[documentLimit];
-        Arrays.fill(returnable, "");
+        try {
+            final int documentLimit = 10;
+            FindIterable<Document> res = this.collection.find()
+                .sort(new Document("_id", -1))
+                .limit(documentLimit);
+            Object[] clean = StreamSupport.stream(res.spliterator(), false)
+                .map(e -> e.get("text")).toArray();
+            String[] returnable = new String[documentLimit];
+            Arrays.fill(returnable, "");
 
-        for (int i = 0; i < clean.length; i++) {
-            returnable[i] = (String) clean[i];
+            for (int i = 0; i < clean.length; i++) {
+                returnable[i] = (String) clean[i];
+            }
+            this.connectFailure = false;
+            return returnable;
+        } catch (Exception e) {
+            this.connectFailure = true;
+            String[] emptyArray = new String[10];
+            Arrays.fill(emptyArray, "");
+            return emptyArray;
         }
+    }
 
-        return returnable;
+    public Boolean isConnected() {
+        if (this.connectFailure) {
+            return false;
+        }
+        return this.connected;
     }
 
     /**
      * Closes the connection to the MongoDB Atlas database.
      */
     public void close() {
-        this.mongoClient.close();
+        if (this.connected) {
+            this.connected = false;
+            this.mongoClient.close();
+        }
     }
 
 }

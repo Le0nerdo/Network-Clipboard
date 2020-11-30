@@ -24,23 +24,30 @@ public class ClipboardManipulator {
      * List of the last texts on clipboard/database.
      */
     private String[] history;
+    private Boolean stopped;
+    private Boolean paused;
 
     /**
      * Constructor that connects the needed instances to the
      * ClipboardManipulatro.
      * @param accessToClipboard Instance of ClipboardAccess to access a
      * clipboard.
-     * @param accessToDatabase Instance of DBAccees to access a database.
-     * @param currentClipboardHistory List of the last texts on
-     * clipboard/database.
      */
-    public ClipboardManipulator(
-        final ClipboardAccess accessToClipboard,
-        final DBAccess accessToDatabase,
-        final String[] currentClipboardHistory) {
+    public ClipboardManipulator(final ClipboardAccess accessToClipboard, final DBAccess database) {
         this.clipboardAccess = accessToClipboard;
-        this.databaseAccess = accessToDatabase;
-        this.history = currentClipboardHistory;
+        this.databaseAccess = database;
+        this.history = new String[10];
+        Arrays.fill(this.history, "");
+        this.paused = false;
+        this.stopped = false;
+    }
+
+    public void reconnectDatabaseTo(final String uri) {
+        this.databaseAccess.reconnectTo(uri);
+    }
+
+    public void disconnectDatabase() {
+        this.databaseAccess.close();
     }
 
     /**
@@ -48,8 +55,11 @@ public class ClipboardManipulator {
      * @return List of the last texts on clipboard/database.
      */
     public String[] updateClipboard() {
+        if (!this.isConnected() | this.stopped) {
+            return this.history;
+        }
         String[] texts = this.databaseAccess.read();
-        if (texts[0].equals(this.history[0])) {
+        if (texts[0].equals(this.history[0]) | this.paused) {
             this.history = texts;
             return this.history;
         }
@@ -88,6 +98,9 @@ public class ClipboardManipulator {
         return new FlavorListener() {
             @Override
             public void flavorsChanged(final FlavorEvent flavorEvent) {
+                if (!isConnected() | stopped) {
+                    return;
+                }
                 try {
                     if (clipboardAccess.isString()) {
                         String text = clipboardAccess.readText();
@@ -103,5 +116,33 @@ public class ClipboardManipulator {
                 }
             }
         };
+    }
+
+    public void stop() {
+        this.stopped = true;
+    }
+
+    public void unStop() {
+        this.stopped = false;
+    }
+
+    public Boolean getStopped() {
+        return this.stopped;
+    }
+
+    public void pause() {
+        this.paused = true;
+    }
+
+    public void unPause() {
+        this.paused = false;
+    }
+
+    public Boolean getPaused() {
+        return this.paused;
+    }
+
+    public Boolean isConnected() {
+        return this.databaseAccess.isConnected();
     }
 }
