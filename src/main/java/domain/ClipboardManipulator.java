@@ -60,17 +60,15 @@ public class ClipboardManipulator {
 	 * {@link ClipboardAccess}/{@link DatabaseAccess}.
 	 */
 	public String[] updateClipboard() {
-		if (this.stopped || !this.isConnected()) {
+		if (this.stopped || !this.isConnected() || !clipboardAccess.containsString()) {
 			return this.history;
 		}
-		String[] texts = this.databaseAccess.read();
+		this.history = this.databaseAccess.read();
 		try {
-			if (this.paused || texts[0].equals(this.history[0])) {
-				this.history = texts;
+			if (this.paused) {
 				return this.history;
 			}
-			this.history = texts;
-			this.clipboardAccess.setString(texts[0]);
+			this.clipboardAccess.setString(this.history[0]);
 		} catch (Exception e) {
 			System.out.println(
 							"ERROR ClipboardManipulator/updateclipboard: " + e);
@@ -110,6 +108,7 @@ public class ClipboardManipulator {
 					if (!stopped && clipboardAccess.containsString() && isConnected()) {
 						final String text = clipboardAccess.getString();
 						if (Arrays.asList(history).contains(text)) {
+							updateClipboard();
 							return;
 						}
 						databaseAccess.write(text);

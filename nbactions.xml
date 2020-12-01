@@ -32,4 +32,12 @@
                 <goal>test</goal>
             </goals>
         </action>
+    <action>
+            <actionName>CUSTOM-generate jar</actionName>
+            <displayName>generate jar</displayName>
+            <goals>
+                <goal>package</goal>
+                <goal>shade:shade</goal>
+            </goals>
+        </action>
 </actions>

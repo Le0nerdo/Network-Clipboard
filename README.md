@@ -51,3 +51,11 @@ mvn jxr:jxr checkstyle:checkstyle
 ```shell
 mvn clean jacoco:prepare-agent install jacoco:report
 ```
+
+### Build jar
+It is recommended to use Project Manager for Java VSCode extension!
+
+You can also use shade through the command line (takes long, just ignore all the alerts). The jar file will be in the "./target" folder.
+```shell
+mvn package shade:shade
+```

@@ -113,15 +113,15 @@ public class ClipboardManipulatorTest {
 	 * @throws IOException if something goes wrong.
 	 */
 	@Test
-	public void updateClipboardDoesNotUpdateClipboardWithSameText() throws UnsupportedFlavorException, IOException {
+	public void updateClipboardUpdatesClipboardWithSameText() throws UnsupportedFlavorException, IOException {
 		this.clipboardManipulator.updateClipboard();
 		this.clipboardManipulator.updateClipboard();
-		verify(clipboardAccess, times(1)).setString(anyString());
+		verify(clipboardAccess, times(2)).setString(anyString());
 	}
 
 	/**
 	 * Test that {@link ClipboardManipulator#updateClipboard()} does not
-	 * access {@link ClipboardAccess} when paused.
+	 * use {@link ClipboardAccess#setString(String)} when paused.
 	 * @throws IOException if something goes wrong.
 	 * @throws UnsupportedFlavorException if something goes wrong.
 	 */
@@ -129,7 +129,7 @@ public class ClipboardManipulatorTest {
 	public void updateClipboardDoesNotUpdateClipboardWhenPaused() throws UnsupportedFlavorException, IOException {
 		this.clipboardManipulator.setPaused(true);
 		this.clipboardManipulator.updateClipboard();
-		verifyNoInteractions(this.clipboardAccess);
+		verify(this.clipboardAccess, times(0)).setString(anyString());
 	}
 
 	/**
