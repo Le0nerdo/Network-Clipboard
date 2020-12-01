@@ -19,6 +19,7 @@ public class ClipboardManipulator {
 	private String[] history;
 	private Boolean stopped;
 	private Boolean paused;
+	private Boolean temporary;
 
 	/**
 	 * Connect {@link DatabaseAccess} and {@link ClipboardAccess} with a new
@@ -33,6 +34,7 @@ public class ClipboardManipulator {
 		Arrays.fill(this.history, "");
 		this.paused = false;
 		this.stopped = false;
+		this.temporary = false;
 	}
 
 	/**
@@ -63,15 +65,17 @@ public class ClipboardManipulator {
 		if (this.stopped || !this.isConnected() || !clipboardAccess.containsString()) {
 			return this.history;
 		}
-		this.history = this.databaseAccess.read();
 		try {
-			if (this.paused) {
+			final String[] texts = this.databaseAccess.read();
+			if (this.paused || (this.temporary && texts[0].equals(this.history[0]))) {
+				this.history = texts;
 				return this.history;
 			}
+			this.history = texts;
+			this.temporary = false;
 			this.clipboardAccess.setString(this.history[0]);
 		} catch (Exception e) {
-			System.out.println(
-							"ERROR ClipboardManipulator/updateclipboard: " + e);
+			System.out.println("ERROR ClipboardManipulator/updateclipboard: " + e);
 		}
 
 		return this.history;
@@ -86,10 +90,10 @@ public class ClipboardManipulator {
 	 */
 	public void setTemporaryClipboardText(final String text) {
 		try {
+			this.temporary = true;
 			this.clipboardAccess.setString(text);
 		} catch (Exception e) {
-			System.out.println(
-							"ERROR ClipboardManipulator/setTemporaryClipboardText: " + e);
+			System.out.println("ERROR ClipboardManipulator/setTemporaryClipboardText: " + e);
 		}
 	}
 
@@ -115,8 +119,7 @@ public class ClipboardManipulator {
 						updateClipboard();
 					}
 				} catch (Exception e) {
-					System.out.println(
-									"ERROR ClipboardManipulator/FlavorListener: " + e);
+					System.out.println("ERROR ClipboardManipulator/FlavorListener: " + e);
 				}
 			}
 		};

@@ -15,7 +15,6 @@ import javafx.scene.layout.HBox;
  */
 public class Controls {
 	private ClipboardManipulator clipboardManipulator;
-	private Preferences pref;
 	private HBox hBox = new HBox();
 	private TextField inpuField = new TextField();
 	private Button connectButton = new Button("Connect");
@@ -28,7 +27,6 @@ public class Controls {
 	 */
 	public Controls(final ClipboardManipulator clipboardmanipulator, final Preferences pref) {
 		this.clipboardManipulator = clipboardmanipulator;
-		this.pref = pref;
 		final int padding = 10;
 		this.hBox.setPadding(new Insets(padding));
 		this.inpuField.setPromptText("MongoDB Atlas URI");

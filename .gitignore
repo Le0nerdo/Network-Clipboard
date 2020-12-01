@@ -8,3 +8,4 @@ cleaner.txt
 .settings
 .project
 Network-Clipboard.jar
+*.jar

@@ -73,7 +73,7 @@ public class UserInterface extends Application {
 		this.update.play();
 
 		final int windowHeight = 300;
-		final int windowWIdth = 500;
+		final int windowWIdth = 550;
 		stage.setScene(new Scene(mainLayout, windowWIdth, windowHeight));
 		controls.setDefaultFocus();
 		stage.show();
