@@ -26,3 +26,5 @@ jobs:
       run: mvn clean jacoco:prepare-agent install jacoco:report
     - name: Data to codecov
       run: bash <(curl -s https://codecov.io/bash)
+    - name: checkstyle
+      run: mvn jxr:jxr checkstyle:checkstyle
