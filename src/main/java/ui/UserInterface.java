@@ -61,7 +61,7 @@ public class UserInterface extends Application {
 		BorderPane mainLayout = new BorderPane();
 
 		ClipboardHistory clipboardHistory =
-			new ClipboardHistory(this.clipboardManipulator);
+						new ClipboardHistory(this.clipboardManipulator);
 		mainLayout.setCenter(clipboardHistory.getVBox());
 
 		Controls controls = new Controls(clipboardManipulator, pref);
