@@ -11,11 +11,25 @@
         </goals>
     </action>
     <action>
-            <actionName>CUSTOM-checkstyle</actionName>
-            <displayName>checkstyle</displayName>
+        <actionName>CUSTOM-checkstyle</actionName>
+        <displayName>checkstyle</displayName>
             <goals>
                 <goal>jxr:jxr</goal>
                 <goal>checkstyle:checkstyle</goal>
+            </goals>
+        </action>
+    <action>
+            <actionName>CUSTOM-clean</actionName>
+            <displayName>clean</displayName>
+            <goals>
+                <goal>clean</goal>
+            </goals>
+        </action>
+    <action>
+            <actionName>CUSTOM-test</actionName>
+            <displayName>test</displayName>
+            <goals>
+                <goal>test</goal>
             </goals>
         </action>
 </actions>

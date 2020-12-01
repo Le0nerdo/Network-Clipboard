@@ -1,4 +1,5 @@
 {
 	"java.configuration.updateBuildConfiguration": "automatic",
-	"java.checkstyle.configuration": "${workspaceFolder}\\checkstyle.xml"
+	"java.checkstyle.configuration": "${workspaceFolder}\\checkstyle.xml",
+	"java.checkstyle.version": "6.11.2"
 }

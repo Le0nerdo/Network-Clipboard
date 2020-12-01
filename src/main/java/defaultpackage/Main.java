@@ -8,15 +8,14 @@ import ui.UserInterface;
  */
 public final class Main {
 
-    private Main() {
+	private Main() {
 
-    }
-    /**
-     * Starts the application.
-     * @param args command-line arguments.
-     * @throws Exception
-     */
-    public static void main(final String[] args) throws Exception {
-        UserInterface.main(args);
-    }
+	}
+	/**
+	 * Starts the application.
+	 * @param args command-line arguments.
+	 */
+	public static void main(final String[] args) {
+		UserInterface.main(args);
+	}
 }

@@ -9,6 +9,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 
+/**
+ * Provides the userinterface component for controlling the state of
+ * ClipboardManipulator.
+ */
 public class Controls {
 	private ClipboardManipulator clipboardManipulator;
 	private Preferences pref;
@@ -17,11 +21,12 @@ public class Controls {
 	private Button connectButton = new Button("Connect");
 	private Button pauseButton = new Button("Pause");
 
-	@SuppressWarnings("checkstyle:methodlength")
-	public Controls(
-		final ClipboardManipulator clipboardmanipulator,
-		final Preferences pref
-		) {
+	/**
+	 * Creates all the control elements.
+	 * @param clipboardmanipulator ClipboardManipulator to be controlled.
+	 * @param pref element for controllin user preferences (saving URI).
+	 */
+	public Controls(final ClipboardManipulator clipboardmanipulator, final Preferences pref) {
 		this.clipboardManipulator = clipboardmanipulator;
 		this.pref = pref;
 		final int padding = 10;
@@ -29,7 +34,7 @@ public class Controls {
 		this.inpuField.setPromptText("MongoDB Atlas URI");
 		this.connectButton.setOnAction((ActionEvent e) -> {
 			String newUri = inpuField.getText();
-			clipboardManipulator.reconnectDatabaseTo(newUri);
+			clipboardManipulator.connectDatabaseTo(newUri);
 			pref.put("ATLAS_URI", newUri);
 			inpuField.setText("");
 		});
@@ -37,35 +42,41 @@ public class Controls {
 		Button stopButton = new Button("Stop");
 		stopButton.setOnAction((ActionEvent e) -> {
 			if (clipboardmanipulator.getStopped()) {
-				clipboardmanipulator.unStop();
+				clipboardmanipulator.setStopped(false);
 				stopButton.setText("Stop");
 			} else {
-				clipboardmanipulator.stop();
+				clipboardmanipulator.setStopped(true);
 				stopButton.setText("Unstop");
 			}
 		});
 
 		pauseButton.setOnAction((ActionEvent e) -> {
 			if (clipboardmanipulator.getPaused()) {
-				clipboardmanipulator.unPause();
+				clipboardmanipulator.setPaused(false);
 				pauseButton.setText("Pause");
 			} else {
-				clipboardmanipulator.pause();
+				clipboardmanipulator.setPaused(true);
 				pauseButton.setText("Unpause");
 			}
 		});
-		
+
 		this.hBox.getChildren().add(this.inpuField);
 		this.hBox.getChildren().add(this.connectButton);
 		this.hBox.getChildren().add(stopButton);
 		this.hBox.getChildren().add(pauseButton);
 	}
 	
+	/**
+	 * Sets focus onto the pause button.
+	 */
 	public void setDefaultFocus() {
 		this.pauseButton.requestFocus();
 	}
 
-
+	/**
+	 * Gets the JavaFX element for controlling the ClipboardManipulator.
+	 * @return JavaFX element with controls
+	 */
 	public HBox getElement() {
 		return this.hBox;
 	}

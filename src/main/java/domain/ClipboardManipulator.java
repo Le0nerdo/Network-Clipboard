@@ -4,145 +4,162 @@ import java.awt.datatransfer.FlavorEvent;
 import java.awt.datatransfer.FlavorListener;
 import java.util.Arrays;
 
-import dao.DBAccess;
+import dao.DatabaseAccess;
 
 /**
- * A Class that manipulates a clipoard according to a database, and the
- * database according to the clipboard.
+ * A Class for connectiong a {@link DatabaseAccess} and {@link ClipboardAccess}. This
+ * is the heart of the project Network Clipboard.
  * @author Le0nerdo
+ * @see ClipboardAccess
+ * @see DatabaseAccess
  */
 public class ClipboardManipulator {
-    /**
-     * Instance of ClipboardAccess to access a clipboard.
-     */
-    private ClipboardAccess clipboardAccess;
-    /**
-     * Instance of DBAccees to access a database.
-     */
-    private DBAccess databaseAccess;
-    /**
-     * List of the last texts on clipboard/database.
-     */
-    private String[] history;
-    private Boolean stopped;
-    private Boolean paused;
+	private final ClipboardAccess clipboardAccess;
+	private final DatabaseAccess databaseAccess;
+	private String[] history;
+	private Boolean stopped;
+	private Boolean paused;
 
-    /**
-     * Constructor that connects the needed instances to the
-     * ClipboardManipulatro.
-     * @param accessToClipboard Instance of ClipboardAccess to access a
-     * clipboard.
-     */
-    public ClipboardManipulator(final ClipboardAccess accessToClipboard, final DBAccess database) {
-        this.clipboardAccess = accessToClipboard;
-        this.databaseAccess = database;
-        this.history = new String[10];
-        Arrays.fill(this.history, "");
-        this.paused = false;
-        this.stopped = false;
-    }
+	/**
+	 * Connect {@link DatabaseAccess} and {@link ClipboardAccess} with a new
+	 * {@link ClipboardManipulator}.
+	 * @param clipboardAccess the {@link ClipboardAccess} to be connected.
+	 * @param databaseAccess the {@link DatabaseAccess} to be connected.
+	 */
+	public ClipboardManipulator(final ClipboardAccess clipboardAccess, final DatabaseAccess databaseAccess) {
+		this.clipboardAccess = clipboardAccess;
+		this.databaseAccess = databaseAccess;
+		this.history = new String[10];
+		Arrays.fill(this.history, "");
+		this.paused = false;
+		this.stopped = false;
+	}
 
-    public void reconnectDatabaseTo(final String uri) {
-        this.databaseAccess.reconnectTo(uri);
-    }
+	/**
+	 * Connects the connected {@link DatabaseAccess} to a new uniform resource
+	 * identifier(URI).
+	 * @param uri the uniform resource identifier(URI). For MongoDB Atlas the URI
+	 * starts with {@code mongodb+srv://}.
+	 */
+	public void connectDatabaseTo(final String uri) {
+		this.databaseAccess.reconnectTo(uri);
+	}
 
-    public void disconnectDatabase() {
-        this.databaseAccess.close();
-    }
+	/**
+	 * Disconnects the connected {@link DatabaseAccess}. This should only be
+	 * used when this {@link ClipboardManipulator} is not needed anymore.
+	*/
+	public void disconnectDatabase() {
+		this.databaseAccess.close();
+	}
 
-    /**
-     * Updates the clipboard according to the database.
-     * @return List of the last texts on clipboard/database.
-     */
-    public String[] updateClipboard() {
-        if (!this.isConnected() | this.stopped) {
-            return this.history;
-        }
-        String[] texts = this.databaseAccess.read();
-        if (texts[0].equals(this.history[0]) | this.paused) {
-            this.history = texts;
-            return this.history;
-        }
-        try {
-            this.history = texts;
-            this.clipboardAccess.setText(texts[0]);
-        } catch (Exception e) {
-            System.out.println(
-                "ERROR ClipboardManipulator/updateclipboard: " + e);
-        }
+	/**
+	 * Updates the connected {@link ClipboardAccess} according to the
+	 * connected {@link DatabaseAccess}.
+	 * @return a histoy of the last {@link String}s on
+	 * {@link ClipboardAccess}/{@link DatabaseAccess}.
+	 */
+	public String[] updateClipboard() {
+		if (this.stopped || !this.isConnected()) {
+			return this.history;
+		}
+		String[] texts = this.databaseAccess.read();
+		try {
+			if (this.paused || texts[0].equals(this.history[0])) {
+				this.history = texts;
+				return this.history;
+			}
+			this.history = texts;
+			this.clipboardAccess.setString(texts[0]);
+		} catch (Exception e) {
+			System.out.println(
+							"ERROR ClipboardManipulator/updateclipboard: " + e);
+		}
 
-        return this.history;
-    }
+		return this.history;
+	}
 
-    /**
-     * Updates the clipboard according to the given text, but does not inform
-     * the database.
-     * @param text The text to be put on the clipboard.
-     */
-    public void setTemporaryClipboardText(final String text) {
-        try {
-            this.clipboardAccess.setText(text);
-        } catch (Exception e) {
-            System.out.println(
-                "ERROR ClipboardManipulator/setTemporaryClipboardText: " + e);
-        }
-    }
+	/**
+	 * Updates the the connected {@link ClipboardAccess} according to the given
+	 * {@link String}, but does not inform the connected
+	 * {@link DatabaseAccess}.
+	 * @param text the {@link String} to be set on the connected
+	 * {@link ClipboardAccess}.
+	 */
+	public void setTemporaryClipboardText(final String text) {
+		try {
+			this.clipboardAccess.setString(text);
+		} catch (Exception e) {
+			System.out.println(
+							"ERROR ClipboardManipulator/setTemporaryClipboardText: " + e);
+		}
+	}
 
-    /**
-     * Creates a FlavorListener that updates the database when text is copied
-     * to the clipboard.
-     * @return A FlavorListener that updates the database when text is copied
-     * to the clipboard.
-     */
-    public FlavorListener createClipboardListener() {
-        return new FlavorListener() {
-            @Override
-            public void flavorsChanged(final FlavorEvent flavorEvent) {
-                if (!isConnected() | stopped) {
-                    return;
-                }
-                try {
-                    if (clipboardAccess.isString()) {
-                        String text = clipboardAccess.readText();
-                        if (Arrays.asList(history).contains(text)) {
-                            return;
-                        }
-                        databaseAccess.write(text);
-                        updateClipboard();
-                    }
-                } catch (Exception e) {
-                    System.out.println(
-                        "ERROR ClipboardManipulator/FlavorListener: " + e);
-                }
-            }
-        };
-    }
+	/**
+	 * Creates a {@link FlavorListener} that updates the connected
+	 * {@link DatabaseAccess} and after that uses
+	 * {@link ClipboardManipulator#updateClipboard()} to make sure that the
+	 * local program is up to date.
+	 * @return A FlavorListener that reacts to {@link FlavorEvent}s.
+	 */
+	public FlavorListener createClipboardListener() {
+		return new FlavorListener() {
+			@Override
+			public void flavorsChanged(final FlavorEvent flavorEvent) {
+				try {
+					if (!stopped && clipboardAccess.containsString() && isConnected()) {
+						final String text = clipboardAccess.getString();
+						if (Arrays.asList(history).contains(text)) {
+							return;
+						}
+						databaseAccess.write(text);
+						updateClipboard();
+					}
+				} catch (Exception e) {
+					System.out.println(
+									"ERROR ClipboardManipulator/FlavorListener: " + e);
+				}
+			}
+		};
+	}
 
-    public void stop() {
-        this.stopped = true;
-    }
+	/**
+	 * Sets the {@link ClipboardManipulator} to a stopped or not stopped state.
+	 * @param stopped true for stopped state and false for not stopped state.
+	 */
+	public void setStopped(final Boolean stopped) {
+		this.stopped = stopped;
+	}
 
-    public void unStop() {
-        this.stopped = false;
-    }
+	/**
+	 * Gets the status of {@link ClipboardManipulator} being stoppped.
+	 * @return true for stopped state and false for not stopped state.
+	 */
+	public Boolean getStopped() {
+		return this.stopped;
+	}
 
-    public Boolean getStopped() {
-        return this.stopped;
-    }
+	/**
+	 * Sets the {@link ClipboardManipulator} to a paused or not paused state.
+	 * @param paused true for paused state and false for not paused state.
+	 */
+	public void setPaused(final Boolean paused) {
+		this.paused = paused;
+	}
 
-    public void pause() {
-        this.paused = true;
-    }
+	/**
+	 * Gets the status of {@link ClipboardManipulator} being paused.
+	 * @return true for paused state and false for not paused state.
+	 */
+	public Boolean getPaused() {
+		return this.paused;
+	}
 
-    public void unPause() {
-        this.paused = false;
-    }
-
-    public Boolean getPaused() {
-        return this.paused;
-    }
-
-    public Boolean isConnected() {
-        return this.databaseAccess.isConnected();
-    }
+	/**
+	 * Checks if the connected {@link DatabaseAccess} is connected.
+	 * @return true if is connected and false if is not connected.
+	 */
+	public Boolean isConnected() {
+		return this.databaseAccess.isConnected();
+	}
 }
