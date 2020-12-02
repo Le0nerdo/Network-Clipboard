@@ -64,6 +64,11 @@ public class ClipboardHistory {
 		this.updateConnected();
 	}
 
+	/**
+	 * Creates the shown elements for each history entry. 
+	 * @param history array of history entries.
+	 * @return arrray of elements for showing history entries.
+	 */
 	private Text[] createElements(final String[] history) {
 		final int maxLineLenght = 83;
 		final int lengthBeforeDots = 80;
@@ -86,6 +91,10 @@ public class ClipboardHistory {
 		return elements;
 	}
 
+	/**
+	 * Makes history entry elements look slightly less ugly.
+	 * @param element the element to get a new style.
+	 */
 	private void styleElement(final Text element) {
 		StringProperty style = new SimpleStringProperty();
 		style.setValue("-fx-cursor: hand;");
@@ -94,6 +103,10 @@ public class ClipboardHistory {
 		VBox.setMargin(element, new Insets(0, 0, bottomPadding, 0));
 	}
 
+	/**
+	 * Shows " Not Connected!" when ClipboardManipulator is not connected to
+	 * a database.
+	 */
 	private void updateConnected() {
 		if (this.clipboardManipulator.isConnected()) {
 			this.connected.setText("");

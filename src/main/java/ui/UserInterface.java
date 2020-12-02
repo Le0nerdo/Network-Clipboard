@@ -79,6 +79,13 @@ public class UserInterface extends Application {
 		stage.show();
 	}
 
+	/**
+	 * Creates a timelin for calling {@link ClipboardHistory#update()} once
+	 * every second.
+	 * @param clipboardHistory the ClipboardHistory to run update() on.
+	 * @return a timelin that calls {@link ClipboardHistory#update()} once
+	 * every second.
+	 */
 	private Timeline createUpdateTimeline(ClipboardHistory clipboardHistory) {
 		return new Timeline(
 			new KeyFrame(Duration.seconds(1),

@@ -41,8 +41,7 @@ public class MongoDBAccess implements DatabaseAccess {
 	}
 
 	/**
-	 * Reconnects database to a new uniform resource
-	 * identifier(URI). 
+	 * Reconnects database to a new uniform resource identifier(URI).
 	 * @param uri the uniform resource identifier(URI). For MongoDB Atlas the URI
 	 * starts with {@code mongodb+srv://}.
 	 */
@@ -55,6 +54,11 @@ public class MongoDBAccess implements DatabaseAccess {
 		}
 	}
 
+	/**
+	 * Connects database to a uniform resource identifier(URI). 
+	 * @param uri the uniform resource identifier(URI). For MongoDB Atlas the URI
+	 * starts with {@code mongodb+srv://}.
+	 */
 	private void changeClient(final String uri) {
 		if (this.mongoClient == null) {
 			this.close();
