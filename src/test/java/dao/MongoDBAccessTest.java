@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -63,5 +64,32 @@ public class MongoDBAccessTest {
 			stringArray[i] = "test" + i;
 		}
 		assertArrayEquals(stringArray, this.mongoDBAccess.read());
+	}
+
+	/**
+	 * Test that isConnected returns the right value.
+	 */
+	@Test
+	public void testIsConnected() {
+		when(this.collection.isConnected()).thenReturn(true).thenReturn(false);
+		assertEquals(true, this.mongoDBAccess.isConnected());
+		assertEquals(false, this.mongoDBAccess.isConnected());
+	}
+
+	/**
+	 * Test that close closes the CollectionConnection.
+	 */
+	@Test
+	public void closeClosesCollecttion() {
+		this.mongoDBAccess.close();
+		verify(this.collection, times(1)).close();
+	}
+
+	/**
+	 * Test that reconnectTo passes string to collection.
+	 */
+	public void reconnectToPassesString() {
+		this.mongoDBAccess.reconnectTo("mongodb+srv://test");
+		verify(this.collection, times(1)).reconnectTo("mongodb+srv://test");
 	}
 }

@@ -80,9 +80,9 @@ public class MongoDBAccess implements DatabaseAccess {
 	}
 
 	/**
-	 * Reconnects database to a new uniform resource
-	 * identifier(URI). 
-	 * @param uri the uniform resource identifier(URI).
+	 * Reconnects database to a new uniform resource identifier(URI).
+	 * @param uri the uniform resource identifier(URI). For MongoDB Atlas the URI
+	 * starts with {@code mongodb+srv://}.
 	 */
 	@Override
 	public void reconnectTo(String uri) {
