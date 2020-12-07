@@ -5,6 +5,7 @@ import java.util.prefs.Preferences;
 
 import dao.DatabaseAccess;
 import dao.MongoDBAccess;
+import dao.MongoDBCollection;
 import domain.ClipboardAccess;
 import domain.ClipboardManipulator;
 import javafx.animation.KeyFrame;
@@ -34,14 +35,14 @@ public class UserInterface extends Application {
 		ClipboardAccess clipboardAccess = new ClipboardAccess(
 							Toolkit.getDefaultToolkit().getSystemClipboard()
 		);
-		DatabaseAccess database = new MongoDBAccess(pref.get("ATLAS_URI", "hups"));
+		MongoDBCollection collection = new MongoDBCollection(pref.get("ATLAS_URI", "hups"));
+		DatabaseAccess database = new MongoDBAccess(collection);
 		this.clipboardManipulator = new ClipboardManipulator(clipboardAccess, database);
 
 		while (true) {
 			try {
 				this.clipboardManipulator.updateClipboard();
-				Toolkit.getDefaultToolkit().getSystemClipboard()
-								.addFlavorListener(
+				Toolkit.getDefaultToolkit().getSystemClipboard().addFlavorListener(
 								this.clipboardManipulator.createClipboardListener()
 				);
 				break;

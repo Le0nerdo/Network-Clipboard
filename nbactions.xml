@@ -40,4 +40,11 @@
                 <goal>shade:shade</goal>
             </goals>
         </action>
+    <action>
+            <actionName>CUSTOM-javadoc</actionName>
+            <displayName>javadoc</displayName>
+            <goals>
+                <goal>javadoc:javadoc</goal>
+            </goals>
+        </action>
 </actions>
