@@ -47,11 +47,19 @@ mvn test
 ```shell
 mvn jxr:jxr checkstyle:checkstyle
 ```
+Report in .\target\site\checkstyle.html
 
 ### Run Jacoco (test coverage)
 ```shell
 mvn clean jacoco:prepare-agent install jacoco:report
 ```
+Report in .\target\site\jacoco\index.html
+
+### Generate javadoc
+```shell
+mvn javadoc:javadoc
+```
+Report in .\target\site\apidocs\
 
 ### Build jar
 It is recommended to use Project Manager for Java VSCode extension!

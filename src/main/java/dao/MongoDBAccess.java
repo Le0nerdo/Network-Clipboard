@@ -19,7 +19,6 @@ public class MongoDBAccess implements DatabaseAccess {
 	/**
 	 * Opens a new connection to a MongoDB Atlas database.
 	 * @param collection MongoDPClient to connect to database.
-	 * @throws UnknownHostException
 	 */
 	public MongoDBAccess(MongoDBCollection collection) {
 		this.collection = collection;
