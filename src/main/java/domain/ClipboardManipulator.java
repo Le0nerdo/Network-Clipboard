@@ -164,4 +164,11 @@ public class ClipboardManipulator {
 	public Boolean isConnected() {
 		return this.databaseAccess.isConnected();
 	}
+
+	/**
+	 * Changes the local history to contain only empty {@link String}s.
+	 */
+	public void clear() {
+		Arrays.fill(this.history, "");
+	}
 }

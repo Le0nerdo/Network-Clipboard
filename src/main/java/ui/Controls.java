@@ -58,12 +58,20 @@ public class Controls {
 			}
 		});
 
+		Button clearButton = new Button("Clear");
+		clearButton.setOnAction((ActionEvent e) -> {
+			pref.remove("ATLAS_URI");
+			clipboardManipulator.connectDatabaseTo("");
+			clipboardManipulator.clear();
+		});
+
 		this.hBox.getChildren().add(this.inpuField);
 		this.hBox.getChildren().add(this.connectButton);
 		this.hBox.getChildren().add(stopButton);
 		this.hBox.getChildren().add(pauseButton);
+		this.hBox.getChildren().add(clearButton);
 	}
-	
+
 	/**
 	 * Sets focus onto the pause button.
 	 */

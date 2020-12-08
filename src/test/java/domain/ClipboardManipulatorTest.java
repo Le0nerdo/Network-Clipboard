@@ -14,6 +14,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.FlavorEvent;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Tests for the {@link ClipboardManipulator} class.
@@ -323,5 +324,19 @@ public class ClipboardManipulatorTest {
 	public void isConnectedRetursFalseWhenDatabaseIsNotConnected() {
 		when(this.databaseAccess.isConnected()).thenReturn(false);
 		assertEquals(false, this.clipboardManipulator.isConnected());
+	}
+
+	/**
+	 * Test that {@link ClipboardManipulator#clear()} changes the local history
+	 * to contain only empty {@link String}s.
+	 */
+	@Test
+	public void clearClearsHistory() {
+		this.clipboardManipulator.updateClipboard();
+		when(this.databaseAccess.isConnected()).thenReturn(false);
+		this.clipboardManipulator.clear();
+		final String[] emtyStrings = new String[10];
+		Arrays.fill(emtyStrings, "");
+		assertArrayEquals(emtyStrings, this.clipboardManipulator.updateClipboard());
 	}
 }
