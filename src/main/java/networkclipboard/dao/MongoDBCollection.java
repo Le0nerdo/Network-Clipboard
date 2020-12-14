@@ -1,4 +1,4 @@
-package dao;
+package networkclipboard.dao;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -16,7 +16,7 @@ public class MongoDBCollection {
 	private Boolean connected = false;
 
 	/**
-	 * Makes a new wrappedMongoClient.
+	 * Makes a new wrappedMongoClient that helps accessing a database collection.
 	 * @param uri the uniform resource identifier(URI). For MongoDB Atlas the URI
 	 * starts with {@code mongodb+srv://}.
 	 */
@@ -25,7 +25,7 @@ public class MongoDBCollection {
 	}
 
 	/**
-	 * Reconnects database to a new uniform resource identifier(URI).
+	 * Reconnects {@link MongoDBCollection} to a new uniform resource identifier(URI).
 	 * @param uri the uniform resource identifier(URI). For MongoDB Atlas the URI
 	 * starts with {@code mongodb+srv://}.
 	 */
@@ -39,14 +39,17 @@ public class MongoDBCollection {
 	}
 
 	/**
-	 * Connects database to a uniform resource identifier(URI). 
+	 * Connects {@link MongoDBCollection} to a uniform resource identifier(URI). 
 	 * @param uri the uniform resource identifier(URI). For MongoDB Atlas the URI
 	 * starts with {@code mongodb+srv://}.
+	 * @throws IllegalArgumentException when the mongo uri is not valid. Also
+	 * throws MongoConfigurationException when no internetconnection, but the
+	 * MongoDB system does not hande connection issues well so the error is "hidden".
 	 */
-	private void changeClient(final String uri) {
+	private void changeClient(final String uri) throws IllegalArgumentException {
 		if (this.mongoClient == null) {
 			this.close();
-		} 
+		}
 		final MongoClientSettings settings = MongoClientSettings.builder()
 						.applyConnectionString(new ConnectionString(uri))
 						.retryWrites(true)
@@ -70,6 +73,7 @@ public class MongoDBCollection {
 	/**
 	 * Uses MongoCollection.find().
 	 * @return same as MongoCollection.find().
+	 * @see {@link MongoCollection#find()}
 	 */
 	public FindIterable<Document> find() {
 		return this.collection.find();
@@ -78,14 +82,15 @@ public class MongoDBCollection {
 	/**
 	 * Uses MongoCollection.insertOne().
 	 * @param document to be inserted.
+	 * @see {@link MongoCollection#insertOne()}
 	 */
 	public void insertOne(Document document) {
 		this.collection.insertOne(document);
 	}
 
 	/**
-	 * Checks if the DatabaseAccess is connected.
-	 * @return boolean telling if the DatabaseAccess is connected.
+	 * Checks if the {@link MongoDBCollection} is connected.
+	 * @return boolean telling if the {@link MongoDBCollection} is connected.
 	 */
 	public Boolean isConnected() {
 		return this.connected;

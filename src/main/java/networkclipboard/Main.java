@@ -1,16 +1,12 @@
-package defaultpackage;
+package networkclipboard;
 
-import ui.UserInterface;
+import networkclipboard.ui.UserInterface;
 
 /**
  * Main class of Network Clipboard that is used to start the application.
  * @author Le0nerdo
  */
 public final class Main {
-
-	private Main() {
-
-	}
 	/**
 	 * Starts the application.
 	 * @param args command-line arguments.

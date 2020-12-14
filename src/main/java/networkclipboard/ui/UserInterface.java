@@ -1,13 +1,13 @@
-package ui;
+package networkclipboard.ui;
 
 import java.awt.Toolkit;
 import java.util.prefs.Preferences;
 
-import dao.DatabaseAccess;
-import dao.MongoDBAccess;
-import dao.MongoDBCollection;
-import domain.ClipboardAccess;
-import domain.ClipboardManipulator;
+import networkclipboard.dao.DatabaseAccess;
+import networkclipboard.dao.MongoDBAccess;
+import networkclipboard.dao.MongoDBCollection;
+import networkclipboard.domain.ClipboardAccess;
+import networkclipboard.domain.ClipboardManipulator;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -63,7 +63,7 @@ public class UserInterface extends Application {
 
 		ClipboardHistory clipboardHistory =
 						new ClipboardHistory(this.clipboardManipulator);
-		mainLayout.setCenter(clipboardHistory.getVBox());
+		mainLayout.setCenter(clipboardHistory.getElement());
 
 		Controls controls = new Controls(clipboardManipulator, pref);
 		mainLayout.setBottom(controls.getElement());
@@ -115,5 +115,4 @@ public class UserInterface extends Application {
 	public static void main(final String[] args) {
 		launch(args);
 	}
-
 }

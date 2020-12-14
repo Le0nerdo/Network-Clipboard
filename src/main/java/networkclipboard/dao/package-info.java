@@ -1,4 +1,4 @@
 /**
  * Functionality to interact with database.
  */
-package dao;
+package networkclipboard.dao;

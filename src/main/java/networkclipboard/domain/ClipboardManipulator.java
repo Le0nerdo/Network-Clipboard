@@ -1,10 +1,10 @@
-package domain;
+package networkclipboard.domain;
 
 import java.awt.datatransfer.FlavorEvent;
 import java.awt.datatransfer.FlavorListener;
 import java.util.Arrays;
 
-import dao.DatabaseAccess;
+import networkclipboard.dao.DatabaseAccess;
 
 /**
  * A Class for connectiong a {@link DatabaseAccess} and {@link ClipboardAccess}. This
@@ -74,9 +74,7 @@ public class ClipboardManipulator {
 			this.history = texts;
 			this.temporary = false;
 			this.clipboardAccess.setString(this.history[0]);
-		} catch (Exception e) {
-			System.out.println("ERROR ClipboardManipulator/updateclipboard: " + e);
-		}
+		} catch (Exception e) { }
 
 		return this.history;
 	}
@@ -92,9 +90,7 @@ public class ClipboardManipulator {
 		try {
 			this.temporary = true;
 			this.clipboardAccess.setString(text);
-		} catch (Exception e) {
-			System.out.println("ERROR ClipboardManipulator/setTemporaryClipboardText: " + e);
-		}
+		} catch (Exception e) { }
 	}
 
 	/**
@@ -118,9 +114,7 @@ public class ClipboardManipulator {
 						databaseAccess.write(text);
 						updateClipboard();
 					}
-				} catch (Exception e) {
-					System.out.println("ERROR ClipboardManipulator/FlavorListener: " + e);
-				}
+				} catch (Exception e) { }
 			}
 		};
 	}

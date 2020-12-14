@@ -1,6 +1,6 @@
-package ui;
+package networkclipboard.ui;
 
-import domain.ClipboardManipulator;
+import networkclipboard.domain.ClipboardManipulator;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
@@ -12,34 +12,23 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
 /**
- * A Class to maintan a JavaFX VBox that contains the clipboard history.
+ * A Class to maintan a JavaFX {@link VBox} that contains the clipboard history.
  * @author Le0nerdo
  */
 public class ClipboardHistory {
-	/**
-	 * Instance of ClipboardManipulator used to put text from history to the
-	 * clipboard.
-	 */
 	private ClipboardManipulator clipboardManipulator;
-	/**
-	 * Main VBox that contains the header and clipboard history.
-	 */
-	private VBox vBox = new VBox();
-	/**
-	 * VBox that contains only the clipboard history.
-	 */
+	private VBox mainBox = new VBox();
 	private VBox historyBox = new VBox();
-
 	private Text connected = new Text("");
 
 	/**
-	 * Constructor that creates the initial VBox to show clipboard history.
-	 * @param clipboardmanipulator A ClipboardManipulator to put text from
-	 * history to the clipboard.
+	 * Constructor that creates the initial {@link VBox} to show clipboard history.
+	 * @param clipboardmanipulator A {@link ClipboardManipulator} to read
+	 * the current history and put text from history to clipboard.
 	 */
 	public ClipboardHistory(final ClipboardManipulator clipboardmanipulator) {
 		final int padding = 10;
-		this.vBox.setPadding(new Insets(padding));
+		this.mainBox.setPadding(new Insets(padding));
 		this.clipboardManipulator = clipboardmanipulator;
 
 		HBox historyHeader = new HBox();
@@ -50,13 +39,14 @@ public class ClipboardHistory {
 		historyHeader.getChildren().add(this.connected);
 		
 
-		this.vBox.getChildren().add(historyHeader);
-		this.vBox.getChildren().add(historyBox);
+		this.mainBox.getChildren().add(historyHeader);
+		this.mainBox.getChildren().add(historyBox);
 		update();
 	}
 
 	/**
-	 * Updates the shown history according to given history.
+	 * Updates the shown history according to curren history on
+	 * {@link ClipboardManipulator}.
 	 */
 	public void update() {
 		String[] history = this.clipboardManipulator.updateClipboard();
@@ -67,7 +57,7 @@ public class ClipboardHistory {
 	/**
 	 * Creates the shown elements for each history entry. 
 	 * @param history array of history entries.
-	 * @return arrray of elements for showing history entries.
+	 * @return array of elements for showing history entries.
 	 */
 	private Text[] createElements(final String[] history) {
 		final int maxLineLenght = 83;
@@ -104,8 +94,8 @@ public class ClipboardHistory {
 	}
 
 	/**
-	 * Shows " Not Connected!" when ClipboardManipulator is not connected to
-	 * a database.
+	 * Shows {@code Not Connected!} when {@link ClipboardManipulator} is not
+	 * connected to a database.
 	 */
 	private void updateConnected() {
 		if (this.clipboardManipulator.isConnected()) {
@@ -116,10 +106,10 @@ public class ClipboardHistory {
 	}
 
 	/**
-	 * Return the VBox that contains the clipboard history.
-	 * @return A VBox showing the clipboard history.
+	 * Return a {@link VBox} that contains the clipboard history.
+	 * @return A {@link VBox} showing the clipboard history.
 	 */
-	public VBox getVBox() {
-		return this.vBox;
+	public VBox getElement() {
+		return this.mainBox;
 	}
 }

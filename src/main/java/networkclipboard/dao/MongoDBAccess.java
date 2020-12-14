@@ -1,6 +1,5 @@
-package dao;
+package networkclipboard.dao;
 
-import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.stream.StreamSupport;
 
@@ -18,14 +17,14 @@ public class MongoDBAccess implements DatabaseAccess {
 
 	/**
 	 * Opens a new connection to a MongoDB Atlas database.
-	 * @param collection MongoDPClient to connect to database.
+	 * @param collection {@link MongoDBCollection} to connect to.
 	 */
 	public MongoDBAccess(MongoDBCollection collection) {
 		this.collection = collection;
 	}
 
 	/**
-	 * Writes text to database.
+	 * Writes text to the database.
 	 * @param text Text to be written to database.
 	 */
 	public void write(final String text) {
@@ -33,7 +32,7 @@ public class MongoDBAccess implements DatabaseAccess {
 		try {
 			this.collection.insertOne(newText);
 		} catch (Exception e) {
-			System.out.println("ERROR MongoDBAccess/write\n" + e);
+			System.out.println("ERROR When writingtext to database.");
 		}
 	}
 
@@ -64,8 +63,8 @@ public class MongoDBAccess implements DatabaseAccess {
 	}
 
 	/**
-	 * Checks if the DatabaseAccess is connected.
-	 * @return boolean telling if the DatabaseAccess is connected.
+	 * Checks if the {@link MongoDBAccess} is connected to a database.
+	 * @return boolean telling if the {@link MongoDBAccess} is connected.
 	 */
 	public Boolean isConnected() {
 		return this.collection.isConnected();

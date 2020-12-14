@@ -1,9 +1,9 @@
-package domain;
+package networkclipboard.domain;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import dao.DatabaseAccess;
+import networkclipboard.dao.DatabaseAccess;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -166,7 +166,7 @@ public class ClipboardManipulatorTest {
 	@Test
 	public void updateClipboardUpdatesClipboardCorrectlyFromDatabase() {
 		this.clipboardManipulator.updateClipboard();
-		verify(clipboardAccess).setString(this.aStrings[0]);
+		verify(this.clipboardAccess).setString(this.aStrings[0]);
 	}
 
 	/**
@@ -181,8 +181,21 @@ public class ClipboardManipulatorTest {
 	}
 
 	/**
-	 * Test that {@link ClipboardManipulator#updateClipboard()} provides
-	 * {@link ClipboardAccess} with the right {@link String}.
+	 * Test that {@link ClipboardManipulator#updateClipboard()} does no write
+	 * to clipboard when latest history element is not changed and a temporary
+	 * text is on the clipboard.
+	 */
+	@Test
+	public void updateClipboardDoesDoesNotChangeTemporeryTextWhenNoNewText() {
+		this.clipboardManipulator.updateClipboard();
+		this.clipboardManipulator.setTemporaryClipboardText("text");
+		this.clipboardManipulator.updateClipboard();
+		verify(this.clipboardAccess, times(2)).setString(anyString());
+	}
+
+	/**
+	 * Test that {@link ClipboardManipulator#setTemporaryClipboardText(String)}
+	 * provides {@link ClipboardAccess} with the right {@link String}.
 	 */
 	@Test
 	public void setTemporaryClipboardTextSetsTextOnClipboard() {
@@ -191,8 +204,8 @@ public class ClipboardManipulatorTest {
 	}
 
 	/**
-	 * Test that {@link ClipboardManipulator#updateClipboard()} does not
-	 * interact with {@link DatabaseAccess}.
+	 * Test that {@link ClipboardManipulator#setTemporaryClipboardText(String)}
+	 * does not interact with {@link DatabaseAccess}.
 	 */
 	@Test
 	public void setTemporaryClipboardTextDoesNotInteractWithDatabaseAccess() {

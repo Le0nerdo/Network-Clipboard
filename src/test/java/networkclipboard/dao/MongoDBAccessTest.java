@@ -1,4 +1,4 @@
-package dao;
+package networkclipboard.dao;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -88,6 +88,7 @@ public class MongoDBAccessTest {
 	/**
 	 * Test that reconnectTo passes string to collection.
 	 */
+	@Test
 	public void reconnectToPassesString() {
 		this.mongoDBAccess.reconnectTo("mongodb+srv://test");
 		verify(this.collection, times(1)).reconnectTo("mongodb+srv://test");

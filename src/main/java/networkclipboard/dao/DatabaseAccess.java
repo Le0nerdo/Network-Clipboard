@@ -1,4 +1,4 @@
-package dao;
+package networkclipboard.dao;
 
 /**
  * Class to access a database.
@@ -25,14 +25,13 @@ public interface DatabaseAccess {
 	void close();
 
 	/**
-	 * Checks if the DatabaseAccess is connected.
+	 * Checks if the {@link DatabaseAccess} is connected to a database.
 	 * @return boolean telling if the DatabaseAccess is connected.
 	 */
 	Boolean isConnected();
 
 	/**
-	 * Reconnects database to a new uniform resource
-	 * identifier(URI). 
+	 * Reconnects database to a new uniform resource identifier(URI). 
 	 * @param uri the uniform resource identifier(URI).
 	 */
 	void reconnectTo(String uri);

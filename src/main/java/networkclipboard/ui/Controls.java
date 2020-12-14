@@ -1,8 +1,8 @@
-package ui;
+package networkclipboard.ui;
 
 import java.util.prefs.Preferences;
 
-import domain.ClipboardManipulator;
+import networkclipboard.domain.ClipboardManipulator;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -86,6 +86,5 @@ public class Controls {
 	public HBox getElement() {
 		return this.hBox;
 	}
-
 
 }

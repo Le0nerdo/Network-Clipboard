@@ -1,4 +1,4 @@
-package domain;
+package networkclipboard.domain;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Clipboard;

@@ -1,4 +1,4 @@
 /**
  * Functionality to interact with clipboad.
  */
-package domain;
+package networkclipboard.domain;
