@@ -62,12 +62,14 @@ public class ClipboardManipulator {
 	 * {@link ClipboardAccess}/{@link DatabaseAccess}.
 	 */
 	public String[] updateClipboard() {
-		if (this.stopped || !this.isConnected() || !clipboardAccess.containsString()) {
+		if (this.stopped || !this.isConnected()) {
 			return this.history;
 		}
 		try {
 			final String[] texts = this.databaseAccess.read();
-			if (this.paused || (this.temporary && texts[0].equals(this.history[0]))) {
+			if (!clipboardAccess.containsString()
+							|| this.paused
+							|| (this.temporary && texts[0].equals(this.history[0]))) {
 				this.history = texts;
 				return this.history;
 			}
