@@ -84,7 +84,7 @@ public class UserInterface extends Application {
 	 * Creates a timelin for calling {@link ClipboardHistory#update()} once
 	 * every second.
 	 * @param clipboardHistory the ClipboardHistory to run update() on.
-	 * @return a timelin that calls {@link ClipboardHistory#update()} once
+	 * @return a timeline that calls {@link ClipboardHistory#update()} once
 	 * every second.
 	 */
 	private Timeline createUpdateTimeline(ClipboardHistory clipboardHistory) {

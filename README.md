@@ -1,7 +1,9 @@
 # Network Clipboard
 
-![Badge telling if Mvane tests pass.](https://github.com/Le0nerdo/Network-Clipboard/workflows/Java%20CI%20with%20Maven/badge.svg)
+![Badge telling if the Maven tests pass.](https://github.com/Le0nerdo/Network-Clipboard/workflows/Java%20CI%20with%20Maven/badge.svg)
 [![codecov](https://codecov.io/gh/Le0nerdo/Network-Clipboard/branch/main/graph/badge.svg?token=H0Z401L8CI)](https://codecov.io/gh/Le0nerdo/Network-Clipboard)
+
+> This used to be a university course project if you want it to be developed further please inform me for example by writing an issue about what features you use or giving a star to the project.
 
 > In the current version the application freezes when the internet connection is lost. Help to fix this is appreciated. The most likely solution will be to change away from mongoDB Atlas.
 
@@ -36,7 +38,12 @@ Network Clipboard is a program that makes it possible to cut, copy and paste tex
 * Making the program with something more commonly found on devices than java.
 
 ## Development
-The program can be started with the main method in [defaultpackage.Main.java](https://github.com/Le0nerdo/Network-Clipboard/blob/main/src/main/java/defaultpackage/Main.java).
+The program can be started with the main method in [defaultpackage.Main.java](https://github.com/Le0nerdo/Network-Clipboard/blob/main/src/main/java/networkclipboard/Main.java).
+
+When changing sometihing in the [ClipboardManipulator](https://github.com/Le0nerdo/Network-Clipboard/blob/main/src/main/java/networkclipboard/domain/ClipboardManipulator.java) class make 2 times sure that you understand how the following works:
+```java
+Toolkit.getDefaultToolkit().getSystemClipboard().addFlavorListener();
+```
 
 ### Run tests
 ```shell
