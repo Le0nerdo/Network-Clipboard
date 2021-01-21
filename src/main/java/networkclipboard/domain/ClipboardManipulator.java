@@ -109,7 +109,7 @@ public class ClipboardManipulator {
 				try {
 					if (!stopped && clipboardAccess.containsString() && isConnected()) {
 						final String text = clipboardAccess.getString();
-						if (Arrays.asList(history).contains(text)) {
+						if (history[0].equals(text)) {
 							updateClipboard();
 							return;
 						}

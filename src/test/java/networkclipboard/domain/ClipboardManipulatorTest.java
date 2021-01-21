@@ -264,25 +264,6 @@ public class ClipboardManipulatorTest {
 
 	/**
 	 * Test that the {@link FlavorListener} created by
-	 * {@link ClipboardManipulator#createClipboardListener()} does not update
-	 * the {@link DatabaseAccess} with a {@link String} that is already in
-	 * history.
-	 * @throws UnsupportedFlavorException if something goes wrong.
-	 * @throws IOException if something goes wrong.
-	 */
-	@Test
-	public void clipboardListenerDoesNotUpdateDatabaseWhitRecentText() throws UnsupportedFlavorException, IOException {
-		this.clipboardManipulator.updateClipboard();
-		when(this.clipboardAccess.getString()).thenReturn("a3,");
-
-		FlavorListener clipboardListener = clipboardManipulator.createClipboardListener();
-		FlavorEvent event = new FlavorEvent(new Clipboard("fake"));
-		clipboardListener.flavorsChanged(event);
-		verify(databaseAccess, times(0)).write(anyString());
-	}
-
-	/**
-	 * Test that the {@link FlavorListener} created by
 	 * {@link ClipboardManipulator#createClipboardListener()} updates the
 	 * {@link DatabaseAccess} with the correct {@link String}. 
 	 */
